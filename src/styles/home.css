@@ -1,0 +1,8 @@
+.home {
+    border: 3px solid green;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 50vw;
+    margin: auto;
+}

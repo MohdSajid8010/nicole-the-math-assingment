@@ -1,0 +1,228 @@
+.lesson {
+    /* margin-top: 10px;
+    margin-bottom: 20px;*/
+    padding-bottom: 40px;
+    border: 10px solid red;
+}
+
+.lesson .box-cont {
+    width: 800px;
+    margin: auto;
+    display: flex;
+    overflow: hidden;
+}
+
+.lesson .box {
+    min-width: 800px;
+    margin: auto;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    min-height: 200px;
+    transition: all 0.4s;
+
+
+}
+
+.lesson .box .equation {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 15px;
+}
+
+.lesson .box .mid-part {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+
+}
+
+.lesson .mid-part .mid_left {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+.lesson .mid-part .mid_right {
+    width: 20%;
+    /* border: 1px solid red; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lesson .mid-part input {
+    outline: none;
+}
+
+.lesson .mid_right button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background-color: rgb(61, 61, 245);
+    color: white;
+    font-weight: 600;
+    transition: all 1s;
+}
+
+.flag_cont {
+    cursor: pointer;
+}
+
+.lesson .mid_right button:hover {
+    border-radius: 30px;
+    background-color: rgb(11, 11, 247);
+    color: white;
+}
+
+.attempt {
+    text-align: right;
+    color: blue;
+    font-weight: 500;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.lesson .btn-cont {
+    display: flex;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: auto;
+}
+
+.lesson .btn-cont button {
+    color: white;
+    background-color: dodgerblue;
+    outline: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.lesson .btn-cont button:nth-of-type(2) {
+    color: white;
+    background-color: palevioletred;
+    outline: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.lesson .correct-ans,
+.incorrect-ans {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px;
+    border-radius: 20px;
+    /* animation: shake 0.5s linear 1; */
+}
+
+.lesson .incorrect-ans {
+
+    background-color: rgb(240, 199, 128);
+    border: 2px solid lightcoral;
+}
+
+.lesson .correct-ans {
+    transition: all 1s;
+    background-color: rgb(126, 201, 105);
+    border: 2px solid green;
+}
+
+@keyframes shake {
+    0% {
+        transform: translateY(0px);
+    }
+
+    25% {
+        transform: translateY(5px);
+    }
+
+    50% {
+        transform: translateY(0px);
+    }
+
+    75% {
+        transform: translateY(-5px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+
+@media (max-width:840px) {
+    .lesson .box-cont {
+        width: 600px;
+    }
+
+    .lesson .box {
+        min-width: 600px;
+    }
+
+    .lesson .btn-cont {
+        max-width: 600px;
+    }
+}
+
+@media (max-width:640px) {
+    .lesson .box-cont {
+        width: 90vw;
+    }
+
+    .lesson .box {
+        min-width: 90vw;
+    }
+
+    .lesson .btn-cont {
+        max-width: 90vw;
+    }
+
+
+
+    .lesson .box .equation {
+        flex-direction: column;
+        gap: 20px;
+        border: 1px solid blue;
+    }
+
+    .flag_cont {
+        align-self: flex-end;
+    }
+
+    .lesson .box .mid-part {
+        justify-content: space-between;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .lesson .mid-part .mid_right {
+        width: 60%;
+        display: flex;
+    }
+
+    .lesson .mid-part .mid_left {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+
+}
+
+
+@media (max-width:500px) {
+    .lesson .mid-part .mid_right {
+        width: 100%;
+        display: flex;
+    }
+}
