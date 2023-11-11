@@ -1,8 +1,5 @@
 .lesson {
-    /* margin-top: 10px;
-    margin-bottom: 20px;*/
     padding-bottom: 40px;
-    border: 10px solid red;
 }
 
 .lesson .box-cont {
@@ -190,7 +187,6 @@
     .lesson .box .equation {
         flex-direction: column;
         gap: 20px;
-        border: 1px solid blue;
     }
 
     .flag_cont {

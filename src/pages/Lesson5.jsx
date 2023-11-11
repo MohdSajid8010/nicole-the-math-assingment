@@ -7,33 +7,35 @@ import err_audio from "../asset/err_tone.mp3";
 import win_audio from "../asset/succes_tone.mp3";
 import { toast } from 'react-toastify';
 import { questionOfLession5 } from '../asset/data';
+import { handleFlagHelperFunc, handlePreviousHelper, handleSubmitHelper, initilizeIndex } from './commonFunction';
 
 
 const Lesson5 = () => {
-
-  const [index, setIndex] = useState(0)
-  const [questionOfLession, setQuestionOfLession] = useState(() => {
-    if (localStorage.getItem("questionOfLession5")) {
-      return JSON.parse(localStorage.getItem("questionOfLession5"));
-    } else {
-      return questionOfLession5
-    }
-  });
-
-  const [userAnswear, setUserAnswear] = useState(() => {
-    if (localStorage.getItem("questionOfLession5")) {
-      let questionOfLession5 = JSON.parse(localStorage.getItem("questionOfLession5"));
-      return questionOfLession5[0].userAnswear
-    } else {
-      return ""
-    }
-  });
 
 
   //function to get data fron Localstorage
   const getDataFromLocalStorage = () => JSON.parse(localStorage.getItem("questionOfLession5")) || questionOfLession5;
   //function to store data in Localstorage
   const storeDataInLocalStorage = (questionOfLession5) => localStorage.setItem("questionOfLession5", JSON.stringify(questionOfLession5));
+
+  const [index, setIndex] = useState(() => {
+    let questionOfLession5 = getDataFromLocalStorage();
+    return initilizeIndex(questionOfLession5)
+
+  });
+
+  const [questionOfLession, setQuestionOfLession] = useState(() => {
+    return getDataFromLocalStorage()
+  });
+
+  const [userAnswear, setUserAnswear] = useState(() => {
+    let questionOfLession5 = getDataFromLocalStorage();
+    return questionOfLession5[index].userAnswear
+
+  });
+
+
+
 
   function handleCheck(currobj) {
     if (!userAnswear) {
@@ -72,34 +74,21 @@ const Lesson5 = () => {
 
   function handleFlag(currobj) {
     let questionOfLession5 = getDataFromLocalStorage();
-    questionOfLession5 = questionOfLession5.map((obj) => {
-      if (obj.qId == currobj.qId) {
-        return { ...obj, isFlag: obj.isFlag == true ? false : true };//toggle isFlag
-      } else {
-        return obj
-      }
-    })
+    // questionOfLession5 = questionOfLession5.map((obj) => {
+    //   if (obj.qId == currobj.qId) {
+    //     return { ...obj, isFlag: obj.isFlag == true ? false : true };//toggle isFlag
+    //   } else {
+    //     return obj
+    //   }
+    // })
+    questionOfLession5 = handleFlagHelperFunc(questionOfLession5, currobj)
     storeDataInLocalStorage(questionOfLession5);
     setQuestionOfLession(questionOfLession5)
   }
 
   function handlePrivousClick() {
     let questionOfLession5 = getDataFromLocalStorage();
-    if (questionOfLession5[index].isSubmit) {
-      setUserAnswear(questionOfLession5[index - 1].userAnswear)
-      setIndex(index - 1); return;
-    }
-
-    let i = index;
-    while (--i >= 0) {
-      if (questionOfLession5[i].isFlag) {
-        setIndex(i)
-        setUserAnswear("")
-        return;
-      }
-    }
-
-    toast.warn("You can only visit preveous when you bookmark the question!")
+    handlePreviousHelper(questionOfLession5, index, setIndex, setUserAnswear)
   }
 
   function handleNextClick() {
@@ -114,27 +103,18 @@ const Lesson5 = () => {
     while (++i < questionOfLession5.length) {
       if (questionOfLession5[i].isFlag || questionOfLession5[i].isVisited == false) {
         setIndex(i)
+        setUserAnswear(questionOfLession5[i].userAnswear)
         break
       }
     }
     questionOfLession5[index].isVisited = true
     storeDataInLocalStorage(questionOfLession5);
-    setUserAnswear("")
   }
 
   function handleSubmitQuiz() {
     let questionOfLession5 = getDataFromLocalStorage();//questionOfLession5 is local varable here
-    questionOfLession5 = questionOfLession5.map((obj) => {
-      return {
-        ...obj, isFlag: false,
-        isVisited: false, qStatus: "notAttempt", isSubmit: true,
-      }
-    })
+    questionOfLession5 = handleSubmitHelper(questionOfLession5, setIndex, setUserAnswear, setQuestionOfLession)
     storeDataInLocalStorage(questionOfLession5);
-    setQuestionOfLession(questionOfLession5)
-    setIndex(0)
-    setUserAnswear(questionOfLession5[0].userAnswear)
-    toast.info("Check Your Answear!", {})
   }
 
   function handleResetQuiz() {
@@ -246,6 +226,7 @@ const Lesson5 = () => {
       </div>
     </div>
   )
+
 }
 
 export default Lesson5

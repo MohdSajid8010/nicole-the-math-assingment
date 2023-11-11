@@ -7,39 +7,32 @@ import err_audio from "../asset/err_tone.mp3";
 import win_audio from "../asset/succes_tone.mp3";
 import { toast } from 'react-toastify';
 import { questionOfLession2 } from '../asset/data';
-
-// The sun rises in the morning sky.
-// Birds can fly in the clear sky.
-// I see a bird in the blue sky.
-// The capital of France is Paris.
-// The cat is under the table.
+import { handleFlagHelperFunc, handlePreviousHelper, handleSubmitHelper, initilizeIndex } from './commonFunction';
 
 
 const Lesson2 = () => {
-
-    const [index, setIndex] = useState(0)
-    const [questionOfLession, setQuestionOfLession] = useState(() => {
-        if (localStorage.getItem("questionOfLession2")) {
-            return JSON.parse(localStorage.getItem("questionOfLession2"));
-        } else {
-            return questionOfLession2
-        }
-    });
-
-    const [userAnswear, setUserAnswear] = useState(() => {
-        if (localStorage.getItem("questionOfLession2")) {
-            let questionOfLession2 = JSON.parse(localStorage.getItem("questionOfLession2"));
-            return questionOfLession2[0].userAnswear
-        } else {
-            return questionOfLession2[0].userAnswear//from global arr
-        }
-    });
-
 
     //function to get data fron Localstorage
     const getDataFromLocalStorage = () => JSON.parse(localStorage.getItem("questionOfLession2")) || questionOfLession2;
     //function to store data in Localstorage
     const storeDataInLocalStorage = (questionOfLession2) => localStorage.setItem("questionOfLession2", JSON.stringify(questionOfLession2));
+
+    const [index, setIndex] = useState(() => {
+        let questionOfLession2 = getDataFromLocalStorage();
+        return initilizeIndex(questionOfLession2)
+
+    });
+
+    const [questionOfLession, setQuestionOfLession] = useState(() => {
+        return getDataFromLocalStorage()
+    });
+
+    const [userAnswear, setUserAnswear] = useState(() => {
+        let questionOfLession2 = getDataFromLocalStorage();
+        return questionOfLession2[index].userAnswear
+
+    });
+
 
     function handleCheck(currobj) {
 
@@ -88,34 +81,14 @@ const Lesson2 = () => {
 
     function handleFlag(currobj) {
         let questionOfLession2 = getDataFromLocalStorage();
-        questionOfLession2 = questionOfLession2.map((obj) => {
-            if (obj.qId == currobj.qId) {
-                return { ...obj, isFlag: obj.isFlag == true ? false : true };//toggle isFlag
-            } else {
-                return obj
-            }
-        })
+        questionOfLession2 = handleFlagHelperFunc(questionOfLession2, currobj)
         storeDataInLocalStorage(questionOfLession2);
         setQuestionOfLession(questionOfLession2)
     }
 
     function handlePrivousClick() {
         let questionOfLession2 = getDataFromLocalStorage();
-        if (questionOfLession2[index].isSubmit) {
-            setUserAnswear(questionOfLession2[index - 1].userAnswear)
-            setIndex(index - 1); return;
-        }
-
-        let i = index;
-        while (--i >= 0) {
-            if (questionOfLession2[i].isFlag) {
-                setIndex(i)
-                setUserAnswear(questionOfLession2[i].userAnswear)
-                return;
-            }
-        }
-
-        toast.warn("You can only visit preveous when you bookmark the question!")
+        handlePreviousHelper(questionOfLession2, index, setIndex, setUserAnswear)
     }
 
     function handleNextClick() {
@@ -136,21 +109,13 @@ const Lesson2 = () => {
         }
         questionOfLession2[index].isVisited = true
         storeDataInLocalStorage(questionOfLession2);
+
     }
 
     function handleSubmitQuiz() {
         let questionOfLession2 = getDataFromLocalStorage();//questionOfLession2 is local varable here
-        questionOfLession2 = questionOfLession2.map((obj) => {
-            return {
-                ...obj, isFlag: false,
-                isVisited: false, qStatus: "notAttempt", isSubmit: true,
-            }
-        })
+        questionOfLession2 = handleSubmitHelper(questionOfLession2, setIndex, setUserAnswear, setQuestionOfLession)
         storeDataInLocalStorage(questionOfLession2);
-        setQuestionOfLession(questionOfLession2)
-        setIndex(0)
-        setUserAnswear({ ...questionOfLession2[0].userAnswear })
-        toast.info("Check Your Answear!", {})
     }
 
     function handleResetQuiz() {
@@ -159,7 +124,11 @@ const Lesson2 = () => {
         console.log(questionOfLession2);
         setQuestionOfLession(questionOfLession2)//from const variable 
         setIndex(0)
+        for (let key in questionOfLession2[0].userAnswear) {
+            questionOfLession2[0].userAnswear[key] = ""
+        }
         setUserAnswear({ ...questionOfLession2[0].userAnswear })
+
     }
 
     function handleCheckUserOnChange(key, val) {
@@ -209,7 +178,7 @@ const Lesson2 = () => {
                                             obj.options.map((opt, i) => (
                                                 <>
                                                     {i != 0 ? "/" : ""}
-                                                    <span key={i}>{opt}</span>
+                                                    <span key={`${obj.qId + i}`}>{opt}</span>
                                                 </>
                                             ))
                                         }
@@ -221,7 +190,7 @@ const Lesson2 = () => {
 
                                             obj.equation.split("").map((ch, i) => (
                                                 (ch == "_" || ch == "-" || ch == "*") ?
-                                                    (<input key={i} type="text" value={Object.values(userAnswear)[ch == "_" ? 0 : (ch == "-") ? 1 : 2]} onChange={(e) => {
+                                                    (<input key={`${obj.qId + i}`} type="text" value={Object.values(userAnswear)[ch == "_" ? 0 : (ch == "-") ? 1 : 2]} onChange={(e) => {
                                                         handleCheckUserOnChange(Object.keys(userAnswear)[ch == "_" ? 0 : (ch == "-") ? 1 : 2], e.target.value)
                                                     }} />)
                                                     : (ch)

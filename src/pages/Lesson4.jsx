@@ -7,37 +7,36 @@ import err_audio from "../asset/err_tone.mp3";
 import win_audio from "../asset/succes_tone.mp3";
 import { toast } from 'react-toastify';
 import { questionOfLession4 } from "../asset/data"
+import { handleFlagHelperFunc, handlePreviousHelper, handleSubmitHelper, initilizeIndex } from './commonFunction';
 
 
 
 const Lesson4 = () => {
 
-    const [index, setIndex] = useState(0)
+    //function to get data fron Localstorage
+    const getDataFromLocalStorage = () => JSON.parse(localStorage.getItem("questionOfLession4")) || questionOfLession4;
+    //function to store data in Localstorage
+    const storeDataInLocalStorage = (questionOfLession4) => localStorage.setItem("questionOfLession4", JSON.stringify(questionOfLession4));
+
+    const [index, setIndex] = useState(() => {
+        let questionOfLession4 = getDataFromLocalStorage();
+        return initilizeIndex(questionOfLession4)
+
+    });
 
     const [questionOfLession, setQuestionOfLession] = useState(() => {
-        if (localStorage.getItem("questionOfLession4")) {
-            return JSON.parse(localStorage.getItem("questionOfLession4"));
-        } else {
-            return questionOfLession4
-        }
+        return getDataFromLocalStorage()
     });
 
     const [userAnswear, setUserAnswear] = useState(() => {
-        if (localStorage.getItem("questionOfLession4")) {
-            let questionOfLession4 = JSON.parse(localStorage.getItem("questionOfLession4"));
-            return questionOfLession4[0].userAnswear
-        } else {
-            return questionOfLession4[0].userAnswear
-        }
+        let questionOfLession4 = getDataFromLocalStorage();
+        return questionOfLession4[index].userAnswear
+
     });
 
     const [dragItemIndex, setdragItemIndex] = useState()
     const [dragOverItemIndex, setdragOverItemIndex] = useState();
 
-    //function to get data fron Localstorage
-    const getDataFromLocalStorage = () => JSON.parse(localStorage.getItem("questionOfLession4")) || questionOfLession4;
-    //function to store data in Localstorage
-    const storeDataInLocalStorage = (questionOfLession4) => localStorage.setItem("questionOfLession4", JSON.stringify(questionOfLession4));
 
     function handleCheck(currobj) {
 
@@ -75,34 +74,14 @@ const Lesson4 = () => {
 
     function handleFlag(currobj) {
         let questionOfLession4 = getDataFromLocalStorage();
-        questionOfLession4 = questionOfLession4.map((obj) => {
-            if (obj.qId == currobj.qId) {
-                return { ...obj, isFlag: obj.isFlag == true ? false : true };//toggle isFlag
-            } else {
-                return obj
-            }
-        })
+        questionOfLession4 = handleFlagHelperFunc(questionOfLession4, currobj)
         storeDataInLocalStorage(questionOfLession4);
         setQuestionOfLession(questionOfLession4)
     }
 
     function handlePrivousClick() {
         let questionOfLession4 = getDataFromLocalStorage();
-        if (questionOfLession4[index].isSubmit) {
-            setUserAnswear(questionOfLession4[index - 1].userAnswear)
-            setIndex(index - 1); return;
-        }
-
-        let i = index;
-        while (--i >= 0) {
-            if (questionOfLession4[i].isFlag) {
-                setIndex(i)
-                setUserAnswear(questionOfLession4[i].userAnswear)
-                return;
-            }
-        }
-
-        toast.warn("You can only visit preveous when you bookmark the question!")
+        handlePreviousHelper(questionOfLession4, index, setIndex, setUserAnswear)
     }
 
     function handleNextClick() {
@@ -128,20 +107,17 @@ const Lesson4 = () => {
 
     function handleSubmitQuiz() {
         let questionOfLession4 = getDataFromLocalStorage();//questionOfLession4 is local varable here
-        questionOfLession4 = questionOfLession4.map((obj) => {
-            return {
-                ...obj, isFlag: false,
-                isVisited: false, qStatus: "notAttempt", isSubmit: true,
-            }
-        })
+        questionOfLession4 = handleSubmitHelper(questionOfLession4, setIndex, setUserAnswear, setQuestionOfLession)
         storeDataInLocalStorage(questionOfLession4);
-        setQuestionOfLession(questionOfLession4)
-        setIndex(0)
-        setUserAnswear(questionOfLession4[0].userAnswear)
-        toast.info("Check Your Answear!", {})
     }
 
     function handleResetQuiz() {
+        let questionOfLession4 = getDataFromLocalStorage();//questionOfLession4 is local varable here
+        questionOfLession4 = questionOfLession4.map((obj) => {
+            return {
+                ...obj, isSubmit: false, userAnswear: obj.options,
+            }
+        })
         localStorage.removeItem("questionOfLession4");//remove the data from localstorage
         console.log(questionOfLession4);
         setQuestionOfLession(questionOfLession4)//from const variable 

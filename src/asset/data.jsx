@@ -126,7 +126,7 @@ export const questionOfLession2 = [
 
 
         qId: "5",
-        equation: "Birds can _ in the clear - ",
+        equation: "Birds can _ in the - sky ",
         correctAnswear: ["fly", "clear"],
         userAnswear: { fly: "", clear: "" },
         options: ["clear", "float", "fly", "Road"],

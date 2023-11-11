@@ -8,32 +8,34 @@ import err_audio from "../asset/err_tone.mp3";
 import win_audio from "../asset/succes_tone.mp3";
 import { toast } from 'react-toastify';
 import { questionOfLession1 } from "../asset/data"
+import { handleFlagHelperFunc, handlePreviousHelper, handleSubmitHelper, initilizeIndex } from './commonFunction';
 
 
 const Lesson1 = () => {
-    const [index, setIndex] = useState(0);
-    const [questionOfLession, setQuestionOfLession] = useState(() => {
-        if (localStorage.getItem("questionOfLession1")) {
-            return JSON.parse(localStorage.getItem("questionOfLession1"));
-        } else {
-            return questionOfLession1
-        }
-    });
-
-    const [userAnswear, setUserAnswear] = useState(() => {
-        if (localStorage.getItem("questionOfLession1")) {
-            let questionOfLession1 = JSON.parse(localStorage.getItem("questionOfLession1"));
-            return questionOfLession1[0].userAnswear
-        } else {
-            return questionOfLession1[0].userAnswear
-        }
-    });
-
 
     //function to get data fron Localstorage
     const getDataFromLocalStorage = () => JSON.parse(localStorage.getItem("questionOfLession1")) || questionOfLession1;
     //function to store data in Localstorage
     const storeDataInLocalStorage = (questionOfLession1) => localStorage.setItem("questionOfLession1", JSON.stringify(questionOfLession1));
+
+    const [index, setIndex] = useState(() => {
+        let questionOfLession1 = getDataFromLocalStorage();
+        return initilizeIndex(questionOfLession1)
+
+    });
+
+    const [questionOfLession, setQuestionOfLession] = useState(() => {
+        return getDataFromLocalStorage()
+    });
+
+    const [userAnswear, setUserAnswear] = useState(() => {
+        let questionOfLession1 = getDataFromLocalStorage();
+        return questionOfLession1[index].userAnswear
+
+    });
+
+
+
 
     function handleCheck(currobj) {
         if (!userAnswear) {
@@ -73,34 +75,14 @@ const Lesson1 = () => {
 
     function handleFlag(currobj) {
         let questionOfLession1 = getDataFromLocalStorage();
-        questionOfLession1 = questionOfLession1.map((obj) => {
-            if (obj.qId == currobj.qId) {
-                return { ...obj, isFlag: obj.isFlag == true ? false : true };//toggle isFlag
-            } else {
-                return obj
-            }
-        })
+        questionOfLession1 = handleFlagHelperFunc(questionOfLession1, currobj)
         storeDataInLocalStorage(questionOfLession1);
         setQuestionOfLession(questionOfLession1)
     }
 
     function handlePrivousClick() {
         let questionOfLession1 = getDataFromLocalStorage();
-        if (questionOfLession1[index].isSubmit) {
-            setUserAnswear(questionOfLession1[index - 1].userAnswear)
-            setIndex(index - 1); return;
-        }
-
-        let i = index;
-        while (--i >= 0) {
-            if (questionOfLession1[i].isFlag) {
-                setIndex(i)
-                setUserAnswear(questionOfLession1[i].userAnswear)
-                return;
-            }
-        }
-
-        toast.warn("You can only visit preveous when you bookmark the question!")
+        handlePreviousHelper(questionOfLession1, index, setIndex, setUserAnswear)
     }
 
     function handleNextClick() {
@@ -120,23 +102,16 @@ const Lesson1 = () => {
             }
         }
         questionOfLession1[index].isVisited = true
+
         storeDataInLocalStorage(questionOfLession1);
 
     }
 
     function handleSubmitQuiz() {
         let questionOfLession1 = getDataFromLocalStorage();//questionOfLession1 is local varable here
-        questionOfLession1 = questionOfLession1.map((obj) => {
-            return {
-                ...obj, isFlag: false,
-                isVisited: false, qStatus: "notAttempt", isSubmit: true,
-            }
-        })
+
+        questionOfLession1 = handleSubmitHelper(questionOfLession1, setIndex, setUserAnswear, setQuestionOfLession)
         storeDataInLocalStorage(questionOfLession1);
-        setQuestionOfLession(questionOfLession1)
-        setIndex(0)
-        setUserAnswear(questionOfLession1[0].userAnswear)
-        toast.info("Check Your Answear!", {})
     }
 
     function handleResetQuiz() {
@@ -145,7 +120,7 @@ const Lesson1 = () => {
         console.log(questionOfLession1);
         setQuestionOfLession(questionOfLession1)//from const variable 
         setIndex(0)
-        setUserAnswear("")
+        setUserAnswear(questionOfLession1[0].userAnswear)
     }
 
     return (

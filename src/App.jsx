@@ -10,8 +10,6 @@ import Lesson5 from './pages/Lesson5'
 import Lesson6 from './pages/Lesson6'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import DragAndDrop from './pages/DragAndDrop'
-import DragAndDrop2 from './pages/DragAndDrop2'
 
 
 function App() {
